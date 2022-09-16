@@ -2,7 +2,7 @@
   <div class="container">
     <n-layout has-sider>
       <n-layout-sider>
-        <SideBar></SideBar>
+        <SideBar @select="selectFile"></SideBar>
       </n-layout-sider>
       <n-layout>
         <n-layout-header>
@@ -12,7 +12,7 @@
           </n-breadcrumb>
         </n-layout-header>
         <n-layout-content>
-          <Milkdown></Milkdown>
+          <Milkdown :selectedNode="selectedNode"></Milkdown>
         </n-layout-content>
         <n-layout-footer>
           &nbsp;<n-a href="https://congb19.com" target="_blank">@Congb19</n-a>
@@ -35,6 +35,11 @@ import {
 } from 'naive-ui';
 import SideBar from '@/components/milkdown/SideBar.vue';
 import Milkdown from '@/components/milkdown/Milkdown.vue';
+import { reactive } from 'vue';
+let selectedNode: any = reactive({});
+const selectFile = (node: any) => {
+  selectedNode = node;
+};
 </script>
 <style scoped>
 .container {
@@ -46,7 +51,7 @@ import Milkdown from '@/components/milkdown/Milkdown.vue';
 .n-layout-header,
 .n-layout-footer {
   border: 1px darkcyan solid;
-  background: rgba(128, 128, 128, 0.2);
+  /* background: rgba(128, 128, 128, 0.2); */
   height: 40px;
   padding: 6px;
 }

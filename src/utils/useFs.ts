@@ -4,9 +4,9 @@ import { reactive } from 'vue';
 
 // export let tree: any[] = reactive([]);
 
-export const test = async (path: string) => {
-  console.log('click');
-  const content = await invoke('my_read_path', { pathstr: path, path });
+export const readPath = async (path: string) => {
+  // console.log('click');
+  const content = await invoke('read_path', { pathstr: path, path });
   return content;
 };
 
@@ -24,7 +24,7 @@ export const fsTree = (content: string) => {
     let isTxt =
       tarr[tarr.length - 1].endsWith('.txt') ||
       tarr[tarr.length - 1].endsWith('.TXT');
-    console.log(isDir, tarr);
+    // console.log(isDir, tarr);
     if (isDir || isMd || isTxt) {
       files.push({
         key: t,

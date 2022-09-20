@@ -7,8 +7,10 @@
       <n-layout>
         <n-layout-header>
           <n-breadcrumb>
-            <n-breadcrumb-item> GO</n-breadcrumb-item>
-            <n-breadcrumb-item> test.md</n-breadcrumb-item>
+            <n-breadcrumb-item v-for="item in filePath">{{
+              item
+            }}</n-breadcrumb-item>
+            <!-- <n-breadcrumb-item> test.md</n-breadcrumb-item> -->
           </n-breadcrumb>
         </n-layout-header>
         <n-layout-content>
@@ -35,11 +37,29 @@ import {
 } from 'naive-ui';
 import SideBar from '@/components/milkdown/SideBar.vue';
 import Milkdown from '@/components/milkdown/Milkdown.vue';
-import { reactive } from 'vue';
-let selectedNode: any = reactive({});
-const selectFile = (node: any) => {
-  selectedNode = node;
+import { computed, reactive } from 'vue';
+let selectedNode: any = reactive({
+  info: {
+    label: '',
+    key: '',
+    isDir: false,
+    isTxt: false,
+    isMd: false,
+  },
+});
+const selectFile = (node: any, rootPath: string) => {
+  console.log('selectFile', node);
+  selectedNode.info = { ...node, rootPath };
 };
+let paths: string[] = reactive([]);
+const filePath = computed(() => {
+  if (selectedNode.info.isDir) return paths;
+  else {
+    paths.length = 0;
+    paths.push(...selectedNode.info.key.split('\\'));
+    return paths;
+  }
+});
 </script>
 <style scoped>
 .container {

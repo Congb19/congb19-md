@@ -3,13 +3,13 @@
     windows_subsystem = "windows"
 )]
 
+use std::{fs, io, env, path::Path};
+
 #[tauri::command]
 async fn read_file(path: std::path::PathBuf) -> String {
     // 读取文件内容，以文本字符串形式返回
     std::fs::read_to_string(path).unwrap()
 }
-
-use std::{fs, io, env, path::Path};
 
 #[tauri::command]
 async fn read_path(pathstr: String) -> String {    
@@ -41,8 +41,8 @@ async fn read_path(pathstr: String) -> String {
 
 fn main() {
     tauri::Builder::default()
-        .invoke_handler(tauri::generate_handler![read_file])
-        .invoke_handler(tauri::generate_handler![read_path])
+        .invoke_handler(tauri::generate_handler![read_file, read_path])
+        // .invoke_handler(tauri::generate_handler![read_path])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

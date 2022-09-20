@@ -9,6 +9,11 @@ export const readPath = async (path: string) => {
   const content = await invoke('read_path', { pathstr: path, path });
   return content;
 };
+export const readFile = async (path: string) => {
+  // console.log('click');
+  const content = await invoke('read_file', { path });
+  return content;
+};
 
 export const fsTree = (content: string) => {
   let arr = content.split('*');
@@ -41,6 +46,7 @@ export const fsTree = (content: string) => {
       let node: any = {
         key: item.key,
         label: item.path[0],
+        // path: [...item.path],
       };
       if (item.path.length > 1) {
         node = {

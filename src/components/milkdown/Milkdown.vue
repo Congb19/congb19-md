@@ -4,12 +4,15 @@
       >保存</n-button
     >
     <n-scrollbar style="max-height: calc(100vh - 82px)">
+      {{ selectedNode }}<br>
+      {{ state }}
       <VueEditor :editor="editor" />
     </n-scrollbar>
   </div>
 </template>
 
 <script lang="ts" setup>
+import { computed, PropType, reactive, ref, watch } from 'vue';
 import {
   Editor,
   rootCtx,
@@ -20,32 +23,69 @@ import {
 import { nord } from '@milkdown/theme-nord';
 import { VueEditor, useEditor } from '@milkdown/vue';
 import { commonmark } from '@milkdown/preset-commonmark';
+import { gfm } from '@milkdown/preset-gfm';
 import { emoji } from '@milkdown/plugin-emoji';
 import { history } from '@milkdown/plugin-history';
+import { tooltip } from '@milkdown/plugin-tooltip';
+import { replaceAll } from '@milkdown/utils';
 
 import { NButton, NScrollbar } from 'naive-ui';
 
-const { editor } = useEditor((root) =>
+import * as fs from '@/utils/useFs';
+
+const props = defineProps({
+  selectedNode: {
+    type: Object as PropType<any>,
+  },
+});
+const state = reactive({
+  modified: false,
+  current: {},
+});
+watch(props.selectedNode, async (newVal, oldVal) => {
+  console.log(newVal.info, oldVal.info);
+  if (newVal.info.isMd) {
+    if (state.modified) {
+      //弹提示是否保存
+    } else {
+      // 把文件内容替换到编辑器中
+      let fullpath =
+        newVal.info.rootPath +
+        (newVal.info.rootPath.endsWith('/') ? '' : '/') +
+        newVal.info.key.replaceAll('\\', '/');
+      let str = (await fs.readFile(fullpath)) as string;
+      writeMarkdown(str);
+      state.modified = false;
+      state.current = { ...newVal.info };
+    }
+  }
+});
+
+const { editor, loading, getInstance, getDom } = useEditor((root) =>
   Editor.make()
     .config((ctx) => {
       ctx.set(rootCtx, root);
       ctx.set(defaultValueCtx, "# 💣Congb19's Markdown Editor");
-      console.log(ctx);
     })
     .use(nord)
     .use(emoji)
-    .use(commonmark)
+    // .use(commonmark)
+    .use(gfm)
     .use(history)
+    .use(tooltip)
 );
-console.log(editor);
-const getMarkdown = () =>
-  editor.action((ctx: any) => {
+// console.log(editor);
+
+const readMarkdown = () =>
+  getInstance()?.action((ctx: any) => {
     const editorView = ctx.get(editorViewCtx);
     const serializer = ctx.get(serializerCtx);
     return serializer(editorView.state.doc);
   });
+const writeMarkdown = (str: string) => getInstance()?.action(replaceAll(str));
+
 const save = () => {
-  let str = getMarkdown();
+  let str = readMarkdown();
   console.log(str);
 };
 </script>

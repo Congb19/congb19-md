@@ -12,13 +12,16 @@
     "tauri-build": "vue-tsc --noEmit && vite build && tauri build"
   },
   "dependencies": {
-    "@milkdown/core": "^6.4.0",
-    "@milkdown/plugin-emoji": "^6.4.0",
-    "@milkdown/plugin-history": "^6.4.0",
-    "@milkdown/preset-commonmark": "^6.4.0",
-    "@milkdown/prose": "^6.4.0",
-    "@milkdown/theme-nord": "^6.4.0",
-    "@milkdown/vue": "^6.4.0",
+    "@milkdown/core": "6.4.0",
+    "@milkdown/plugin-emoji": "6.4.0",
+    "@milkdown/plugin-history": "6.4.0",
+    "@milkdown/plugin-tooltip": "6.4.0",
+    "@milkdown/preset-commonmark": "6.4.0",
+    "@milkdown/preset-gfm": "6.4.0",
+    "@milkdown/prose": "6.4.0",
+    "@milkdown/theme-nord": "6.4.0",
+    "@milkdown/utils": "6.4.0",
+    "@milkdown/vue": "6.4.0",
     "@tauri-apps/api": "^1.0.2",
     "naive-ui": "^2.33.2",
     "vue": "^3.2.37"

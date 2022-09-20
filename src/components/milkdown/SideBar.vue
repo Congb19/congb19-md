@@ -37,17 +37,28 @@ import {
 import * as fs from '@/utils/useFs';
 import { reactive, ref, watch } from 'vue';
 
+const emits = defineEmits(['select']);
+
 const path = ref('');
 const rootPath = ref('');
 const content = ref('');
-let seletedNode: any = reactive({});
-let data: TreeOption[] = reactive([]);
-watch(
-  () => seletedNode,
-  (newVal, oldVal) => {
-    console.log(newVal, oldVal);
-  }
-);
+let selectedNode: any = reactive({});
+let data: TreeOption[] = reactive([
+  {
+    key: 'test1',
+    label: '111',
+    isDir: true,
+    isTxt: false,
+    isMd: false,
+  },
+  {
+    key: 'test2',
+    label: '222',
+    isDir: false,
+    isTxt: true,
+    isMd: false,
+  },
+]);
 
 const open = (e: any) => {
   if (e.key == 'Enter') openPath();
@@ -61,8 +72,9 @@ const openPath = async () => {
 };
 const selectFile = (keys: Array<string | number>) => {
   if (keys.length > 0) {
-    seletedNode = getNode(data, keys[0] as string);
-    console.log(keys, seletedNode);
+    selectedNode = getNode(data, keys[0] as string);
+    console.log(keys, selectedNode);
+    emits('select', selectedNode, rootPath.value);
   }
 };
 const getNode = (tree: any[], key: string): any => {

@@ -37,7 +37,7 @@ h1 {
   text-align: center;
 }
 
-input,
+/* input,
 button {
   border-radius: 8px;
   border: 1px solid transparent;
@@ -66,7 +66,7 @@ button {
 
 #greet-input {
   margin-right: 5px;
-}
+} */
 
 @media (prefers-color-scheme: dark) {
   :root {

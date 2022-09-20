@@ -14,6 +14,11 @@ export const readFile = async (path: string) => {
   const content = await invoke('read_file', { path });
   return content;
 };
+export const writeFile = async (path: string, contents: string) => {
+  // console.log('click');
+  const result = await invoke('write_file', { path, contents });
+  return result;
+};
 
 export const fsTree = (content: string) => {
   let arr = content.split('*');

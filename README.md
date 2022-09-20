@@ -1,8 +1,10 @@
 # congb19-md
 
-一个本地markdown编辑器
+一个本地 markdown 编辑器
 
-Congb19又开始挖坑了
+利用 rust 的能力读写本地文件和目录。利用 milkdown 的能力可视化编辑 markdown 文件。
+
+Congb19 又开始挖坑了
 
 # Tauri + Vue 3 + TypeScript
 

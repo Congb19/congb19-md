@@ -4,7 +4,7 @@
       >保存</n-button
     >
     <n-scrollbar style="max-height: calc(100vh - 82px)">
-      {{ selectedNode }}<br>
+      {{ selectedNode }}<br />
       {{ state }}
       <VueEditor :editor="editor" />
     </n-scrollbar>
@@ -40,8 +40,18 @@ const props = defineProps({
 });
 const state = reactive({
   modified: false,
-  current: {},
+  current: {
+    rootPath: '',
+    key: '',
+  },
 });
+
+// const fullpath = computed(() => {
+//   state.current.rootPath +
+//     (state.current.rootPath.endsWith('/') ? '' : '/') +
+//     state.current.key.replaceAll('\\', '/');
+// });
+
 watch(props.selectedNode, async (newVal, oldVal) => {
   console.log(newVal.info, oldVal.info);
   if (newVal.info.isMd) {
@@ -87,6 +97,11 @@ const writeMarkdown = (str: string) => getInstance()?.action(replaceAll(str));
 const save = () => {
   let str = readMarkdown();
   console.log(str);
+  let fullpath =
+    state.current.rootPath +
+    (state.current.rootPath.endsWith('/') ? '' : '/') +
+    state.current.key.replaceAll('\\', '/');
+  fs.writeFile(fullpath, str);
 };
 </script>
 <style>

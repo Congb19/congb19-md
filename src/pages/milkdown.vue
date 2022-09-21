@@ -1,26 +1,32 @@
 <template>
   <div class="container">
-    <n-layout has-sider>
-      <n-layout-sider>
-        <SideBar @select="selectFile"></SideBar>
-      </n-layout-sider>
-      <n-layout>
-        <n-layout-header>
-          <n-breadcrumb>
-            <n-breadcrumb-item v-for="item in filePath">{{
-              item
-            }}</n-breadcrumb-item>
-            <!-- <n-breadcrumb-item> test.md</n-breadcrumb-item> -->
-          </n-breadcrumb>
-        </n-layout-header>
-        <n-layout-content>
-          <Milkdown :selectedNode="selectedNode"></Milkdown>
-        </n-layout-content>
-        <n-layout-footer>
-          &nbsp;<n-a href="https://congb19.com" target="_blank">@Congb19</n-a>
-        </n-layout-footer>
-      </n-layout>
-    </n-layout>
+    <n-message-provider>
+      <n-dialog-provider>
+        <n-layout has-sider>
+          <n-layout-sider>
+            <SideBar @select="selectFile"></SideBar>
+          </n-layout-sider>
+          <n-layout>
+            <n-layout-header>
+              <n-breadcrumb>
+                <n-breadcrumb-item v-for="item in filePath">{{
+                  item
+                }}</n-breadcrumb-item>
+                <!-- <n-breadcrumb-item> test.md</n-breadcrumb-item> -->
+              </n-breadcrumb>
+            </n-layout-header>
+            <n-layout-content>
+              <Milkdown :selectedNode="selectedNode"></Milkdown>
+            </n-layout-content>
+            <n-layout-footer>
+              &nbsp;<n-a href="https://congb19.com" target="_blank"
+                >@Congb19</n-a
+              >
+            </n-layout-footer>
+          </n-layout>
+        </n-layout>
+      </n-dialog-provider>
+    </n-message-provider>
   </div>
 </template>
 <script setup lang="ts">
@@ -34,6 +40,8 @@ import {
   NBreadcrumbItem,
   NScrollbar,
   NA,
+  NMessageProvider,
+  NDialogProvider
 } from 'naive-ui';
 import SideBar from '@/components/milkdown/SideBar.vue';
 import Milkdown from '@/components/milkdown/Milkdown.vue';

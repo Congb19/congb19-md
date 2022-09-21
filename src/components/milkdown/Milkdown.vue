@@ -19,6 +19,7 @@ import {
   defaultValueCtx,
   editorViewCtx,
   serializerCtx,
+  editorStateCtx,
 } from '@milkdown/core';
 import { nord } from '@milkdown/theme-nord';
 import { VueEditor, useEditor } from '@milkdown/vue';
@@ -29,7 +30,7 @@ import { history } from '@milkdown/plugin-history';
 import { tooltip } from '@milkdown/plugin-tooltip';
 import { replaceAll } from '@milkdown/utils';
 
-import { NButton, NScrollbar } from 'naive-ui';
+import { NButton, NScrollbar, useMessage, useDialog } from 'naive-ui';
 
 import * as fs from '@/utils/useFs';
 
@@ -38,8 +39,9 @@ const props = defineProps({
     type: Object as PropType<any>,
   },
 });
+const originStr = ref('');
 const state = reactive({
-  modified: false,
+  modified: computed(() => originStr !== readMarkdown()),
   current: {
     rootPath: '',
     key: '',
@@ -54,19 +56,22 @@ const state = reactive({
 
 watch(props.selectedNode, async (newVal, oldVal) => {
   console.log(newVal.info, oldVal.info);
-  if (newVal.info.isMd) {
+  if (newVal.info.key !== state.current.key && newVal.info.isMd) {
     if (state.modified) {
       //弹提示是否保存
+      handleConfirm(
+        async () => {
+          // 保存旧文件
+          let saveOk = await save();
+          if (saveOk) message.success('保存成功');
+          fillInEditor(newVal.info);
+        },
+        () => fillInEditor(newVal.info),
+        () => fillInEditor(newVal.info)
+      );
     } else {
       // 把文件内容替换到编辑器中
-      let fullpath =
-        newVal.info.rootPath +
-        (newVal.info.rootPath.endsWith('/') ? '' : '/') +
-        newVal.info.key.replaceAll('\\', '/');
-      let str = (await fs.readFile(fullpath)) as string;
-      writeMarkdown(str);
-      state.modified = false;
-      state.current = { ...newVal.info };
+      fillInEditor(newVal.info);
     }
   }
 });
@@ -86,22 +91,70 @@ const { editor, loading, getInstance, getDom } = useEditor((root) =>
 );
 // console.log(editor);
 
-const readMarkdown = () =>
-  getInstance()?.action((ctx: any) => {
+// 编辑器方法
+const readMarkdown = () => {
+  return getInstance()?.action((ctx: any) => {
     const editorView = ctx.get(editorViewCtx);
     const serializer = ctx.get(serializerCtx);
     return serializer(editorView.state.doc);
   });
-const writeMarkdown = (str: string) => getInstance()?.action(replaceAll(str));
+};
+const writeMarkdown = (str: string) => {
+  return getInstance()?.action(replaceAll(str));
+};
+const fillInEditor = async (info: any) => {
+  let fullpath =
+    info.rootPath +
+    (info.rootPath.endsWith('/') ? '' : '/') +
+    info.key.replaceAll('\\', '/');
+  let str = (await fs.readFile(fullpath)) as string;
+  writeMarkdown(str);
+  originStr.value = str;
+  // state.modified = false;
+  state.current = { ...info };
+};
 
-const save = () => {
+// 交互
+const save = async () => {
+  // test();
   let str = readMarkdown();
-  console.log(str);
+  // console.log('readMarkdown', str);
   let fullpath =
     state.current.rootPath +
     (state.current.rootPath.endsWith('/') ? '' : '/') +
     state.current.key.replaceAll('\\', '/');
-  fs.writeFile(fullpath, str);
+  let res = await fs.writeFile(fullpath, str);
+  return res;
+};
+const message = useMessage();
+const dialog = useDialog();
+const handleConfirm = (
+  okFn: Function,
+  cancelFn: Function,
+  closeFn: Function
+) => {
+  dialog.warning({
+    title: '警告',
+    content: '文件内容已修改，是否需要保存？',
+    positiveText: '保存',
+    negativeText: '不保存',
+    maskClosable: false,
+    onPositiveClick: () => {
+      okFn();
+    },
+    onNegativeClick: () => {
+      cancelFn();
+    },
+    onClose: () => {
+      closeFn();
+    },
+  });
+};
+const test = () => {
+  getInstance()?.action((ctx) => {
+    const state = ctx.get(editorStateCtx);
+    console.log('ctxstate!', state);
+  });
 };
 </script>
 <style>

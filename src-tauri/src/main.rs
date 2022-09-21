@@ -14,6 +14,8 @@ async fn read_file(path: std::path::PathBuf) -> String {
 async fn write_file(path: std::path::PathBuf, contents: String) -> bool {
     // 读取文件内容，以文本字符串形式返回
     std::fs::write(path, contents);
+    
+    // todo: write成功则返回true，失败则返回false
     return true;
 }
 

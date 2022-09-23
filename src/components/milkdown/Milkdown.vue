@@ -6,6 +6,7 @@
     <n-scrollbar style="max-height: calc(100vh - 82px)">
       {{ selectedNode }}<br />
       {{ state }}
+      {{ originStr }}
       <VueEditor :editor="editor" />
     </n-scrollbar>
   </div>
@@ -39,31 +40,24 @@ const props = defineProps({
     type: Object as PropType<any>,
   },
 });
-const originStr = ref('');
+const originStr = ref("# 💣Congb19's Markdown Editor");
 const state = reactive({
-  modified: computed(() => originStr !== readMarkdown()),
+  modified: computed(() => originStr.value !== readMarkdown()),
   current: {
     rootPath: '',
     key: '',
   },
 });
 
-// const fullpath = computed(() => {
-//   state.current.rootPath +
-//     (state.current.rootPath.endsWith('/') ? '' : '/') +
-//     state.current.key.replaceAll('\\', '/');
-// });
-
 watch(props.selectedNode, async (newVal, oldVal) => {
   console.log(newVal.info, oldVal.info);
   if (newVal.info.key !== state.current.key && newVal.info.isMd) {
-    if (state.modified) {
+    if (state.current.key !== '' && state.modified) {
       //弹提示是否保存
       handleConfirm(
         async () => {
           // 保存旧文件
-          let saveOk = await save();
-          if (saveOk) message.success('保存成功');
+          await save();
           fillInEditor(newVal.info);
         },
         () => fillInEditor(newVal.info),
@@ -80,7 +74,7 @@ const { editor, loading, getInstance, getDom } = useEditor((root) =>
   Editor.make()
     .config((ctx) => {
       ctx.set(rootCtx, root);
-      ctx.set(defaultValueCtx, "# 💣Congb19's Markdown Editor");
+      ctx.set(defaultValueCtx, originStr.value);
     })
     .use(nord)
     .use(emoji)
@@ -89,7 +83,6 @@ const { editor, loading, getInstance, getDom } = useEditor((root) =>
     .use(history)
     .use(tooltip)
 );
-// console.log(editor);
 
 // 编辑器方法
 const readMarkdown = () => {
@@ -110,21 +103,19 @@ const fillInEditor = async (info: any) => {
   let str = (await fs.readFile(fullpath)) as string;
   writeMarkdown(str);
   originStr.value = str;
-  // state.modified = false;
   state.current = { ...info };
 };
 
 // 交互
 const save = async () => {
-  // test();
+  if (!state.modified) message.warning('您未做任何修改');
   let str = readMarkdown();
-  // console.log('readMarkdown', str);
   let fullpath =
     state.current.rootPath +
     (state.current.rootPath.endsWith('/') ? '' : '/') +
     state.current.key.replaceAll('\\', '/');
   let res = await fs.writeFile(fullpath, str);
-  return res;
+  if (res) message.success('保存成功');
 };
 const message = useMessage();
 const dialog = useDialog();
@@ -150,12 +141,12 @@ const handleConfirm = (
     },
   });
 };
-const test = () => {
-  getInstance()?.action((ctx) => {
-    const state = ctx.get(editorStateCtx);
-    console.log('ctxstate!', state);
-  });
-};
+// const test = () => {
+//   getInstance()?.action((ctx) => {
+//     const state = ctx.get(editorStateCtx);
+//     console.log('ctxstate!', state);
+//   });
+// };
 </script>
 <style>
 .cb-editor {
